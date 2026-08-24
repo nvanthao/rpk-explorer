@@ -1,0 +1,39 @@
+name: Update rpk command tree
+
+on:
+  schedule:
+    # Every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install rpk
+        run: |
+          curl -LO https://github.com/redpanda-data/redpanda/releases/latest/download/rpk-linux-amd64.zip
+          mkdir -p "$HOME/.local/bin"
+          unzip rpk-linux-amd64.zip -d "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Regenerate data.json
+        run: rpk --print-tree > public/data.json
+
+      - name: Open PR if data changed
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: 'chore: update rpk command tree'
+          title: 'chore: update rpk command tree'
+          body: |
+            Automated weekly update of `public/data.json` from `rpk --print-tree`.
+          branch: bot/update-rpk-tree
+          delete-branch: true
+          add-paths: public/data.json
