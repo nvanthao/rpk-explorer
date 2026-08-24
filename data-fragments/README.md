@@ -5,10 +5,9 @@ generate itself, because they only appear once a plugin is installed that
 requires interactive setup — currently just `rpk cloud byoc`, which needs a
 real Redpanda Cloud login before its plugin will even download.
 
-Each fragment is a small JSON file: `{ path, extractedAt,
-extractedWithRpkVersion, node }`, where `node` is the raw subtree from
-`rpk --print-tree` and `path` is where it splices back in (e.g.
-`"rpk cloud byoc"`).
+Each fragment is just the raw `rpk --print-tree` JSON node for that
+subtree — e.g. `cloud-byoc.json` is exactly the `"byoc"` command object that
+lives under `rpk cloud`.
 
 ## Refreshing a fragment
 

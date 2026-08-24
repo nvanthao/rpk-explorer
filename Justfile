@@ -1,17 +1,20 @@
 print-tree:
     rpk --print-tree > public/data.json
 
-# Snapshot a plugin-gated subtree (e.g. rpk cloud byoc) that CI can't
-# generate itself, so it can be merged back in on every CI run. Requires
-# the subtree to actually be present locally — e.g. run `rpk cloud login`
-# first for cloud byoc.
+# Snapshot the rpk cloud byoc subtree, which CI can't generate itself (its
+# plugin needs a real Cloud login to even download). Requires it to already
+# be present locally — e.g. run `rpk cloud login` first.
 extract-cloud-byoc:
-    rpk --print-tree | node scripts/extract-fragment.mjs "rpk cloud byoc" > data-fragments/cloud-byoc.json
+    rpk --print-tree | jq '.commands[] | select(.name == "cloud") | .commands[] | select(.name == "byoc")' > data-fragments/cloud-byoc.json
 
-# Splice the checked-in cloud-byoc fragment into public/data.json. CI does
-# this automatically after print-tree; run it locally to preview the result.
+# Splice the checked-in cloud-byoc fragment into public/data.json's rpk
+# cloud subtree, replacing any existing byoc entry. CI does this
+# automatically after print-tree; run it locally to preview the result.
 merge-cloud-byoc:
-    node scripts/merge-fragment.mjs public/data.json data-fragments/cloud-byoc.json
+    jq --argjson byoc "$(cat data-fragments/cloud-byoc.json)" \
+        '(.commands[] | select(.name == "cloud") | .commands) |= (map(select(.name != "byoc")) + [$byoc])' \
+        public/data.json > public/data.json.tmp
+    mv public/data.json.tmp public/data.json
 
 dev:
     pnpm run dev

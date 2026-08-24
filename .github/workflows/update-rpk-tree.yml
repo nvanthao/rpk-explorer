@@ -41,8 +41,16 @@ jobs:
       - name: Regenerate data.json
         run: rpk --print-tree > public/data.json
 
-      - name: Merge in locally-extracted fragments
-        run: node scripts/merge-fragment.mjs public/data.json data-fragments/cloud-byoc.json
+      - name: Merge in locally-extracted rpk cloud byoc fragment
+        run: |
+          if [ -f data-fragments/cloud-byoc.json ]; then
+            jq --argjson byoc "$(cat data-fragments/cloud-byoc.json)" \
+              '(.commands[] | select(.name == "cloud") | .commands) |= (map(select(.name != "byoc")) + [$byoc])' \
+              public/data.json > public/data.json.tmp
+            mv public/data.json.tmp public/data.json
+          else
+            echo "no data-fragments/cloud-byoc.json found, skipping merge"
+          fi
 
       - name: Open PR if data changed
         uses: peter-evans/create-pull-request@v7
