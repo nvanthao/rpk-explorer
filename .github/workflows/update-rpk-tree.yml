@@ -24,6 +24,15 @@ jobs:
           unzip rpk-linux-amd64.zip -d "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Install rpk-managed plugins
+        # rpk connect and rpk cloud byoc are managed plugins, not part of the
+        # bare rpk binary — without installing them first, --print-tree omits
+        # their entire subtrees. See:
+        # https://docs.redpanda.com/connect/get-started/quickstarts/rpk/
+        run: |
+          rpk connect install
+          rpk cloud byoc install
+
       - name: Regenerate data.json
         run: rpk --print-tree > public/data.json
 
