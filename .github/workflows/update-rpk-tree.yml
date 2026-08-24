@@ -25,20 +25,17 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Install rpk-managed plugins
-        # rpk connect and rpk cloud byoc are managed plugins, not part of the
-        # bare rpk binary — without installing them first, --print-tree omits
-        # their entire subtrees. See:
+        # rpk connect is a managed plugin, not part of the bare rpk binary —
+        # without installing it first, --print-tree omits its entire
+        # subtree. See:
         # https://docs.redpanda.com/connect/get-started/quickstarts/rpk/
         #
-        # `rpk cloud byoc install` requires a real --redpanda-id and Cloud
-        # auth, which isn't available in CI. Any other byoc subcommand
-        # triggers the same auto-install first, so `aws validate` with no
-        # args is used instead: it fails fast on local arg validation
-        # ("either redpanda-id or region must be provided") without ever
-        # calling the Cloud API, but the plugin download still happens.
+        # rpk cloud byoc is also a managed plugin, but every byoc subcommand
+        # (install, aws/azure/gcp validate, etc.) requires a valid Redpanda
+        # Cloud auth token before it will even download the plugin — see
+        # README.md for the TODO on wiring up Cloud credentials for this.
         run: |
           rpk connect install
-          rpk cloud byoc aws validate || true
 
       - name: Regenerate data.json
         run: rpk --print-tree > public/data.json
