@@ -29,9 +29,16 @@ jobs:
         # bare rpk binary — without installing them first, --print-tree omits
         # their entire subtrees. See:
         # https://docs.redpanda.com/connect/get-started/quickstarts/rpk/
+        #
+        # `rpk cloud byoc install` requires a real --redpanda-id and Cloud
+        # auth, which isn't available in CI. Any other byoc subcommand
+        # triggers the same auto-install first, so `aws validate` with no
+        # args is used instead: it fails fast on local arg validation
+        # ("either redpanda-id or region must be provided") without ever
+        # calling the Cloud API, but the plugin download still happens.
         run: |
           rpk connect install
-          rpk cloud byoc install
+          rpk cloud byoc aws validate || true
 
       - name: Regenerate data.json
         run: rpk --print-tree > public/data.json
