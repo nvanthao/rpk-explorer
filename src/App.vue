@@ -20,7 +20,7 @@ const expandedBeforeSearch = ref<Set<string> | null>(null)
 
 onMounted(async () => {
   try {
-    const res = await fetch('/data.json')
+    const res = await fetch(`${import.meta.env.BASE_URL}data.json`)
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
     const raw: RpkCommand = await res.json()
     index.value = buildIndex(raw)

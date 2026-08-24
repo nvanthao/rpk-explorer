@@ -17,7 +17,7 @@ Run this whenever `rpk`'s command set changes, or before your first `dev`/`build
 
 `.github/workflows/update-rpk-tree.yml` does this automatically on a weekly schedule (and via manual `workflow_dispatch`), opening a PR when the tree changes. It installs the `rpk connect` managed plugin first so that subtree isn't dropped from the output.
 
-**TODO**: `rpk cloud byoc`'s subtree is still missing from the automated snapshot. Every `rpk cloud byoc` subcommand (`install`, `aws/azure/gcp validate`, etc.) requires a valid Redpanda Cloud auth token before it'll even download its plugin, and there's no service-account-friendly way to get that in CI yet. To fix: add Redpanda Cloud client-id/client-secret as repo secrets and run `rpk cloud login -X cloud.client_id=... -X cloud.client_secret=...` non-interactively in the workflow before installing the plugin.
+`rpk cloud byoc` is also a managed plugin, but every subcommand under it requires a real Redpanda Cloud login before it'll even download — not something CI can do unattended. The whole `rpk cloud` command instead comes from a fragment snapshotted locally and checked into `data-fragments/`, which CI splices into every generated tree. See `data-fragments/README.md` to refresh it.
 
 ## Develop
 
