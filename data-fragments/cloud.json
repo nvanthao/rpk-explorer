@@ -1,0 +1,1584 @@
+{
+  "name": "cloud",
+  "description": "Interact with Redpanda cloud",
+  "usage": "rpk cloud [flags]",
+  "aliases": [],
+  "flags": [],
+  "commands": [
+    {
+      "name": "auth",
+      "description": "Manage rpk cloud authentications.\n\nAn rpk cloud authentication allows you to talk to Redpanda Cloud. Most likely,\nyou will only ever need to use a single SSO based login and you will not need\nthis command space. Multiple authentications can be useful if you have multiple\nRedpanda Cloud accounts for different organizations and want to swap between\nthem, or if you use SSO as well as client credentials. It is recommended to\nonly use a single SSO based login.\n",
+      "usage": "rpk cloud auth [flags]",
+      "aliases": [],
+      "flags": [],
+      "commands": [
+        {
+          "name": "delete",
+          "description": "Delete an rpk cloud authentication.\n\nDeleting a cloud authentication removes it from the rpk.yaml file. If the\ndeleted auth was the current authentication, rpk will use a default SSO auth the\nnext time you try to login and save that auth.\n\nIf you delete an authentication that is used by profiles, affected profiles have\ntheir authentication cleared and you will only be able to access the profile's\ncluster using SASL credentials.\n",
+          "usage": "rpk cloud auth delete [NAME] [flags]",
+          "aliases": [],
+          "flags": [],
+          "commands": []
+        },
+        {
+          "name": "list",
+          "description": "List rpk cloud authentications",
+          "usage": "rpk cloud auth list [flags]",
+          "aliases": [
+            "ls"
+          ],
+          "flags": [
+            {
+              "name": "format",
+              "type": "string",
+              "description": "Output format (json,yaml,text,wide,help)",
+              "default": "text",
+              "required": false
+            }
+          ],
+          "commands": []
+        },
+        {
+          "name": "token",
+          "description": "Print the cloud auth token of the current profile.\n\nThis command prints the auth token for the currently selected cloud\nauthentication to stdout. This is useful for piping the token into other\ncommands or scripts that need to authenticate with Redpanda Cloud.",
+          "usage": "rpk cloud auth token [flags]",
+          "aliases": [],
+          "flags": [],
+          "commands": []
+        },
+        {
+          "name": "use",
+          "description": "Select the rpk cloud authentication to use.\n\nThis swaps the current cloud authentication to the specified cloud\nauthentication. If your current profile is a cloud profile, this unsets the\ncurrent profile (since the authentication is now different). If your current\nprofile is for a self hosted cluster, the profile is kept.\n",
+          "usage": "rpk cloud auth use [NAME] [flags]",
+          "aliases": [],
+          "flags": [],
+          "commands": []
+        }
+      ]
+    },
+    {
+      "name": "byoc",
+      "description": "Manage a Redpanda cloud BYOC agent\n\nFor BYOC, Redpanda installs an agent service in your owned cluster. The agent\nthen proceeds to provision further infrastructure and eventually, a full\nRedpanda cluster.\n\nThe BYOC command runs Terraform to create and start the agent. You first need\na redpanda-id (or cluster ID); this is used to get the details of how your\nagent should be provisioned. You can create a BYOC cluster in our cloud UI\nand then come back to this command to complete the process.\n",
+      "usage": "rpk cloud byoc [flags]",
+      "aliases": [],
+      "flags": [
+        {
+          "name": "client-id",
+          "type": "string",
+          "description": "The client ID of the organization in Redpanda Cloud",
+          "default": "",
+          "required": false
+        },
+        {
+          "name": "client-secret",
+          "type": "string",
+          "description": "The client secret of the organization in Redpanda Cloud",
+          "default": "",
+          "required": false
+        },
+        {
+          "name": "redpanda-id",
+          "type": "string",
+          "description": "The redpanda ID of the cluster you are creating",
+          "default": "",
+          "required": false
+        }
+      ],
+      "commands": [
+        {
+          "name": "aws",
+          "description": "Manage the Redpanda agent in AWS",
+          "usage": "rpk cloud byoc aws [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "client-id",
+              "type": "string",
+              "description": "The client ID of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "client-secret",
+              "type": "string",
+              "description": "The client secret of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "redpanda-id",
+              "type": "string",
+              "description": "The redpanda ID of the cluster you are creating",
+              "default": "",
+              "required": false
+            }
+          ],
+          "commands": [
+            {
+              "name": "apply",
+              "description": "Create Redpanda agent infrastructure\n\nThis command provisions a Redpanda agent and network in your AWS account.\nOnce created, the agent will proceed to provision the rest of the Redpanda\ninfrastructure.\n",
+              "usage": "rpk cloud byoc aws apply [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            },
+            {
+              "name": "cleanup",
+              "description": "Cleanup leftover Redpanda cluster resources\n\nThe cleanup command does a best-effort cleanup of any leftover resources after destroy of a Redpanda cluster or a Redpanda agent fails for any reason.\n",
+              "usage": "rpk cloud byoc aws cleanup [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            },
+            {
+              "name": "destroy",
+              "description": "Destroy your Redpanda agent and network\n\nThis command destroys the Redpanda agent and network in your AWS account.\n\nThis does not destroy your Redpanda cluster: delete the cluster in the Cloud UI\nbefore deleting the agent.\n",
+              "usage": "rpk cloud byoc aws destroy [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            },
+            {
+              "name": "resource",
+              "description": "Run specific Redpanda resource\n\nThis command provisions Redpanda agent infrastructure by running individual resources.\nThis is meant to be run internally and is marked as hidden.\n",
+              "usage": "rpk cloud byoc aws resource [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": [
+                {
+                  "name": "agent",
+                  "description": "Run Redpanda agent resource",
+                  "usage": "rpk cloud byoc aws resource agent [flags]",
+                  "aliases": [],
+                  "flags": [
+                    {
+                      "name": "client-id",
+                      "type": "string",
+                      "description": "The client ID of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "client-secret",
+                      "type": "string",
+                      "description": "The client secret of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "redpanda-id",
+                      "type": "string",
+                      "description": "The redpanda ID of the cluster you are creating",
+                      "default": "",
+                      "required": false
+                    }
+                  ],
+                  "commands": [
+                    {
+                      "name": "apply",
+                      "description": "Create Redpanda agent infrastructure\n\nThis command provisions Redpanda agent in your AWS account.\n",
+                      "usage": "rpk cloud byoc aws resource agent apply [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    },
+                    {
+                      "name": "destroy",
+                      "description": "Destroy Redpanda agent infrastructure\n\nThis command destroys Redpanda agent in your AWS account.\n",
+                      "usage": "rpk cloud byoc aws resource agent destroy [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    }
+                  ]
+                },
+                {
+                  "name": "cloudstorage",
+                  "description": "Run Redpanda cloud storage resource",
+                  "usage": "rpk cloud byoc aws resource cloudstorage [flags]",
+                  "aliases": [],
+                  "flags": [
+                    {
+                      "name": "client-id",
+                      "type": "string",
+                      "description": "The client ID of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "client-secret",
+                      "type": "string",
+                      "description": "The client secret of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "redpanda-id",
+                      "type": "string",
+                      "description": "The redpanda ID of the cluster you are creating",
+                      "default": "",
+                      "required": false
+                    }
+                  ],
+                  "commands": [
+                    {
+                      "name": "apply",
+                      "description": "Create Redpanda cloud storage infrastructure\n\nThis command provisions Redpanda cloud storage S3 bucket in your AWS account.\n",
+                      "usage": "rpk cloud byoc aws resource cloudstorage apply [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    },
+                    {
+                      "name": "destroy",
+                      "description": "Destroy Redpanda cloud storage infrastructure\n\nThis command destroys Redpanda cloud storage S3 bucket in your AWS account.\n",
+                      "usage": "rpk cloud byoc aws resource cloudstorage destroy [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    }
+                  ]
+                },
+                {
+                  "name": "network",
+                  "description": "Run Redpanda network resource",
+                  "usage": "rpk cloud byoc aws resource network [flags]",
+                  "aliases": [],
+                  "flags": [
+                    {
+                      "name": "client-id",
+                      "type": "string",
+                      "description": "The client ID of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "client-secret",
+                      "type": "string",
+                      "description": "The client secret of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "redpanda-id",
+                      "type": "string",
+                      "description": "The redpanda ID of the cluster you are creating",
+                      "default": "",
+                      "required": false
+                    }
+                  ],
+                  "commands": [
+                    {
+                      "name": "apply",
+                      "description": "Create Redpanda network infrastructure\n\nThis command provisions Redpanda network in your AWS account.\n",
+                      "usage": "rpk cloud byoc aws resource network apply [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    },
+                    {
+                      "name": "destroy",
+                      "description": "Destroy Redpanda network infrastructure\n\nThis command destroys Redpanda network in your AWS account.\n",
+                      "usage": "rpk cloud byoc aws resource network destroy [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "validate",
+              "description": "Perform pre-requisite validation for BYOC clusters\n\nThis command takes as arguments the fields required for a BYOC cluster and performs validation to ensure the referenced\nresources are configured correctly to support a Redpanda cluster. Most of the pre-requisite validation is intended for\nBYOC clusters of type Customer-Managed in which case all of the optional flags should be included.\n",
+              "usage": "rpk cloud byoc aws validate [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            }
+          ]
+        },
+        {
+          "name": "azure",
+          "description": "Manage the Redpanda agent in Azure",
+          "usage": "rpk cloud byoc azure [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "client-id",
+              "type": "string",
+              "description": "The client ID of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "client-secret",
+              "type": "string",
+              "description": "The client secret of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "redpanda-id",
+              "type": "string",
+              "description": "The redpanda ID of the cluster you are creating",
+              "default": "",
+              "required": false
+            }
+          ],
+          "commands": [
+            {
+              "name": "apply",
+              "description": "Create Redpanda agent infrastructure\n\nThis command provisions a Redpanda agent and network in your Azure subscription.\nOnce created, the agent will proceed to provision the rest of the Redpanda\ninfrastructure.\n",
+              "usage": "rpk cloud byoc azure apply [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            },
+            {
+              "name": "destroy",
+              "description": "Destroy your Redpanda agent and network\n\nThis command destroys the Redpanda agent and network in your Azure account.\n\nThis does not destroy your Redpanda cluster: delete the cluster in the Cloud UI\nbefore deleting the agent.\n",
+              "usage": "rpk cloud byoc azure destroy [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            },
+            {
+              "name": "resource",
+              "description": "Run specific Redpanda resource\n\nThis command provisions Redpanda agent infrastructure by running individual resources.\nThis is meant to be run internally and is marked as hidden.\n",
+              "usage": "rpk cloud byoc azure resource [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": [
+                {
+                  "name": "agent",
+                  "description": "Run Redpanda agent resource",
+                  "usage": "rpk cloud byoc azure resource agent [flags]",
+                  "aliases": [],
+                  "flags": [
+                    {
+                      "name": "client-id",
+                      "type": "string",
+                      "description": "The client ID of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "client-secret",
+                      "type": "string",
+                      "description": "The client secret of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "redpanda-id",
+                      "type": "string",
+                      "description": "The redpanda ID of the cluster you are creating",
+                      "default": "",
+                      "required": false
+                    }
+                  ],
+                  "commands": [
+                    {
+                      "name": "apply",
+                      "description": "Create Redpanda agent infrastructure",
+                      "usage": "rpk cloud byoc azure resource agent apply [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    },
+                    {
+                      "name": "destroy",
+                      "description": "Destroy Redpanda agent infrastructure",
+                      "usage": "rpk cloud byoc azure resource agent destroy [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    }
+                  ]
+                },
+                {
+                  "name": "network",
+                  "description": "Run Redpanda network resource",
+                  "usage": "rpk cloud byoc azure resource network [flags]",
+                  "aliases": [],
+                  "flags": [
+                    {
+                      "name": "client-id",
+                      "type": "string",
+                      "description": "The client ID of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "client-secret",
+                      "type": "string",
+                      "description": "The client secret of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "redpanda-id",
+                      "type": "string",
+                      "description": "The redpanda ID of the cluster you are creating",
+                      "default": "",
+                      "required": false
+                    }
+                  ],
+                  "commands": [
+                    {
+                      "name": "apply",
+                      "description": "Create Redpanda network infrastructure",
+                      "usage": "rpk cloud byoc azure resource network apply [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    },
+                    {
+                      "name": "destroy",
+                      "description": "Destroy Redpanda network infrastructure",
+                      "usage": "rpk cloud byoc azure resource network destroy [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "validate",
+              "description": "Perform pre-requisite validation for BYOC clusters\n\nThis command takes as arguments the fields required for a BYOC cluster and performs validation to ensure the referenced\nresources are configured correctly to support a Redpanda cluster. Most of the pre-requisite validation is intended for\nBYOC clusters of type Customer-Managed in which case all of the optional flags should be included.\n",
+              "usage": "rpk cloud byoc azure validate [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            }
+          ]
+        },
+        {
+          "name": "gcp",
+          "description": "Manage the Redpanda agent in GCP",
+          "usage": "rpk cloud byoc gcp [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "client-id",
+              "type": "string",
+              "description": "The client ID of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "client-secret",
+              "type": "string",
+              "description": "The client secret of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "redpanda-id",
+              "type": "string",
+              "description": "The redpanda ID of the cluster you are creating",
+              "default": "",
+              "required": false
+            }
+          ],
+          "commands": [
+            {
+              "name": "apply",
+              "description": "Create Redpanda agent infrastructure\n\nThis command provisions a Redpanda agent and network in your GCP account.\nOnce created, the agent will proceed to provision the rest of the Redpanda\ninfrastructure.\n",
+              "usage": "rpk cloud byoc gcp apply [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            },
+            {
+              "name": "destroy",
+              "description": "Destroy your Redpanda agent and network\n\nThis command destroys the Redpanda agent and network in your GCP account.\n\nThis does not destroy your Redpanda cluster: delete the cluster in the Cloud UI\nbefore deleting the agent.\n",
+              "usage": "rpk cloud byoc gcp destroy [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            },
+            {
+              "name": "resource",
+              "description": "Run specific Redpanda resource\n\nThis command provisions Redpanda agent infrastructure by running individual resources.\nThis is meant to be run internally and is marked as hidden.\n",
+              "usage": "rpk cloud byoc gcp resource [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": [
+                {
+                  "name": "agent",
+                  "description": "Run Redpanda agent resource",
+                  "usage": "rpk cloud byoc gcp resource agent [flags]",
+                  "aliases": [],
+                  "flags": [
+                    {
+                      "name": "client-id",
+                      "type": "string",
+                      "description": "The client ID of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "client-secret",
+                      "type": "string",
+                      "description": "The client secret of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "redpanda-id",
+                      "type": "string",
+                      "description": "The redpanda ID of the cluster you are creating",
+                      "default": "",
+                      "required": false
+                    }
+                  ],
+                  "commands": [
+                    {
+                      "name": "apply",
+                      "description": "Create Redpanda agent infrastructure\n\nThis command provisions Redpanda agent in your GCP account.\n",
+                      "usage": "rpk cloud byoc gcp resource agent apply [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    },
+                    {
+                      "name": "destroy",
+                      "description": "Destroy Redpanda agent infrastructure\n\nThis command destroys Redpanda agent in your GCP account.\n",
+                      "usage": "rpk cloud byoc gcp resource agent destroy [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    }
+                  ]
+                },
+                {
+                  "name": "cloudstorage",
+                  "description": "Run provisioning of redpanda cloud storage resource",
+                  "usage": "rpk cloud byoc gcp resource cloudstorage [flags]",
+                  "aliases": [],
+                  "flags": [
+                    {
+                      "name": "client-id",
+                      "type": "string",
+                      "description": "The client ID of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "client-secret",
+                      "type": "string",
+                      "description": "The client secret of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "redpanda-id",
+                      "type": "string",
+                      "description": "The redpanda ID of the cluster you are creating",
+                      "default": "",
+                      "required": false
+                    }
+                  ],
+                  "commands": [
+                    {
+                      "name": "apply",
+                      "description": "Create Redpanda cloud storage infrastructure\n\nThis command provisions Redpanda cloud storage in your GCP account.\n",
+                      "usage": "rpk cloud byoc gcp resource cloudstorage apply [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    },
+                    {
+                      "name": "destroy",
+                      "description": "Destroy Redpanda cloud storage infrastructure\n\nThis command destroys Redpanda cloud storage in your GCP account.\n",
+                      "usage": "rpk cloud byoc gcp resource cloudstorage destroy [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    }
+                  ]
+                },
+                {
+                  "name": "network",
+                  "description": "Run Redpanda network resource",
+                  "usage": "rpk cloud byoc gcp resource network [flags]",
+                  "aliases": [],
+                  "flags": [
+                    {
+                      "name": "client-id",
+                      "type": "string",
+                      "description": "The client ID of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "client-secret",
+                      "type": "string",
+                      "description": "The client secret of the organization in Redpanda Cloud",
+                      "default": "",
+                      "required": false
+                    },
+                    {
+                      "name": "redpanda-id",
+                      "type": "string",
+                      "description": "The redpanda ID of the cluster you are creating",
+                      "default": "",
+                      "required": false
+                    }
+                  ],
+                  "commands": [
+                    {
+                      "name": "apply",
+                      "description": "Create Redpanda network infrastructure\n\nThis command provisions Redpanda network in your GCP account.\n",
+                      "usage": "rpk cloud byoc gcp resource network apply [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    },
+                    {
+                      "name": "destroy",
+                      "description": "Destroy Redpanda network infrastructure\n\nThis command destroys Redpanda network in your GCP account.\n",
+                      "usage": "rpk cloud byoc gcp resource network destroy [flags]",
+                      "aliases": [],
+                      "flags": [
+                        {
+                          "name": "client-id",
+                          "type": "string",
+                          "description": "The client ID of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "client-secret",
+                          "type": "string",
+                          "description": "The client secret of the organization in Redpanda Cloud",
+                          "default": "",
+                          "required": false
+                        },
+                        {
+                          "name": "redpanda-id",
+                          "type": "string",
+                          "description": "The redpanda ID of the cluster you are creating",
+                          "default": "",
+                          "required": false
+                        }
+                      ],
+                      "commands": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "validate",
+              "description": "Perform pre-requisite validation for BYOC clusters\n\nThis command takes as arguments the fields required for a BYOC cluster and performs validation to ensure the referenced\nresources are configured correctly to support a Redpanda cluster. Most of the pre-requisite validation is intended for\nBYOC clusters of type Customer-Managed in which case all of the optional flags should be included.\n",
+              "usage": "rpk cloud byoc gcp validate [flags]",
+              "aliases": [],
+              "flags": [
+                {
+                  "name": "client-id",
+                  "type": "string",
+                  "description": "The client ID of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "client-secret",
+                  "type": "string",
+                  "description": "The client secret of the organization in Redpanda Cloud",
+                  "default": "",
+                  "required": false
+                },
+                {
+                  "name": "redpanda-id",
+                  "type": "string",
+                  "description": "The redpanda ID of the cluster you are creating",
+                  "default": "",
+                  "required": false
+                }
+              ],
+              "commands": []
+            }
+          ]
+        },
+        {
+          "name": "help",
+          "description": "Help provides help for any command in the application.\nSimply type byoc help [path to command] for full details.",
+          "usage": "rpk cloud byoc help [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "client-id",
+              "type": "string",
+              "description": "The client ID of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "client-secret",
+              "type": "string",
+              "description": "The client secret of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "redpanda-id",
+              "type": "string",
+              "description": "The redpanda ID of the cluster you are creating",
+              "default": "",
+              "required": false
+            }
+          ],
+          "commands": []
+        },
+        {
+          "name": "install",
+          "description": "Install the BYOC plugin\n\nThis command downloads the BYOC managed plugin if necessary. The plugin is\ninstalled by default if you try to run a non-install command, but this command\nexists if you want to download the plugin ahead of time.\n",
+          "usage": "rpk cloud byoc install [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "redpanda-id",
+              "type": "string",
+              "description": "The redpanda ID of the cluster you are creating",
+              "default": "",
+              "required": true
+            }
+          ],
+          "commands": []
+        },
+        {
+          "name": "uninstall",
+          "description": "Uninstall the BYOC plugin\n\nThis command deletes your locally downloaded BYOC managed plugin if it exists.\nOften, you only need to download the plugin to create your cluster once, and\nthen you never need the plugin again. You can uninstall to save a small bit of\ndisk space.\n",
+          "usage": "rpk cloud byoc uninstall [flags]",
+          "aliases": [],
+          "flags": [],
+          "commands": []
+        },
+        {
+          "name": "version",
+          "description": "Display the version of the plugin",
+          "usage": "rpk cloud byoc version [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "client-id",
+              "type": "string",
+              "description": "The client ID of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "client-secret",
+              "type": "string",
+              "description": "The client secret of the organization in Redpanda Cloud",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "redpanda-id",
+              "type": "string",
+              "description": "The redpanda ID of the cluster you are creating",
+              "default": "",
+              "required": false
+            }
+          ],
+          "commands": []
+        }
+      ]
+    },
+    {
+      "name": "cluster",
+      "description": "Manage rpk cloud clusters.\n\nThis command allows you to manage cloud clusters, as well as easily switch\nbetween which cluster you are talking to.\n",
+      "usage": "rpk cloud cluster [flags]",
+      "aliases": [],
+      "flags": [],
+      "commands": [
+        {
+          "name": "select",
+          "description": "Update your rpk profile to talk to the requested cluster.\n\nThis command is essentially an alias for the following command:\n\n    rpk profile create --from-cloud=${NAME}\n\nIf you want to name this profile rather than creating or updating values in\nthe default cloud-dedicated profile, you can use the --profile flag.\n\nFor serverless clusters that support both public and private networking, you\nwill be prompted to select a network type unless you specify --serverless-network.\nTo avoid prompts in automation, explicitly set --serverless-network to 'public'\nor 'private'.\n",
+          "usage": "rpk cloud cluster select [NAME] [flags]",
+          "aliases": [
+            "use"
+          ],
+          "flags": [
+            {
+              "name": "profile",
+              "type": "string",
+              "description": "Name of a profile to create or update (avoids updating \"rpk-cloud\")",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "serverless-network",
+              "type": "string",
+              "description": "Networking type for serverless clusters: 'public' or 'private' (if not specified, will prompt if both are available)",
+              "default": "",
+              "required": false
+            }
+          ],
+          "commands": []
+        }
+      ]
+    },
+    {
+      "name": "login",
+      "description": "Log in to the Redpanda cloud\n\nThis command checks for an existing Redpanda Cloud API token and, if present, \nensures it is still valid. If no token is found or the token is no longer valid, \nthis command will login and save your token along with the client ID used to \nrequest the token.\n\nYou may use either SSO or client credentials to log in.\n\nSSO\n\nThis will automatically launch your default web browser and prompt you to \nauthenticate via our Redpanda Cloud page. Once you have successfully \nauthenticated, you will be ready to use rpk cloud commands.\n\nYou may opt out of auto-opening the browser by passing the '--no-browser' flag.\n\nCLIENT CREDENTIALS\n\nCloud client credentials can be used to login to Redpanda, they can be created \nin the Clients tab of the Users section in the Redpanda Cloud online interface. \nclient credentials can be provided in three ways, in order of preference:\n\n* In your rpk cloud auth, 'client_id' and 'client_secret' fields\n* Through RPK_CLOUD_CLIENT_ID and RPK_CLOUD_CLIENT_SECRET environment variables\n* Through the --client-id and --client-secret flags\n\nIf none of these are provided, rpk will use the SSO method to login. \nIf you specify environment variables or flags, they will not be synced to the\nrpk.yaml file unless the --save flag is passed. The cloud authorization \ntoken and client ID is always synced.\n",
+      "usage": "rpk cloud login [flags]",
+      "aliases": [],
+      "flags": [
+        {
+          "name": "client-id",
+          "type": "string",
+          "description": "The client ID of the organization in Redpanda Cloud",
+          "default": "",
+          "required": false
+        },
+        {
+          "name": "client-secret",
+          "type": "string",
+          "description": "The client secret of the organization in Redpanda Cloud",
+          "default": "",
+          "required": false
+        },
+        {
+          "name": "no-browser",
+          "type": "bool",
+          "description": "Opt out of auto-opening authentication URL",
+          "default": false,
+          "required": false
+        },
+        {
+          "name": "no-profile",
+          "type": "bool",
+          "description": "Skip automatic profile creation and any associated prompts",
+          "default": false,
+          "required": false
+        },
+        {
+          "name": "save",
+          "type": "bool",
+          "description": "Save environment or flag specified client ID and client secret to the configuration file",
+          "default": false,
+          "required": false
+        }
+      ],
+      "commands": []
+    },
+    {
+      "name": "logout",
+      "description": "Log out from Redpanda cloud\n\nThis command deletes your cloud auth token. If you want to log out entirely and\nswitch to a different organization, you can use the --clear-credentials flag to\nadditionally clear your client ID and client secret.\n\nYou can use the --all flag to log out of all organizations you may be logged\ninto.\n",
+      "usage": "rpk cloud logout [flags]",
+      "aliases": [],
+      "flags": [
+        {
+          "name": "all",
+          "shorthand": "a",
+          "type": "bool",
+          "description": "Log out of all organizations you may be logged into, rather than just the current auth's organization",
+          "default": false,
+          "required": false
+        },
+        {
+          "name": "clear-credentials",
+          "shorthand": "c",
+          "type": "bool",
+          "description": "Clear the client ID and client secret in addition to the auth token",
+          "default": false,
+          "required": false
+        }
+      ],
+      "commands": []
+    },
+    {
+      "name": "mcp",
+      "description": "Manage Redpanda Cloud MCP server",
+      "usage": "rpk cloud mcp [flags]",
+      "aliases": [],
+      "flags": [],
+      "commands": [
+        {
+          "name": "install",
+          "description": "Install Redpanda Cloud MCP server.\n\t\t\nSupports Claude Desktop and Claude Code.\nWrites an mcpServer entry with name \"redpandaCloud\" into the appropriate config file.",
+          "usage": "rpk cloud mcp install [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "allow-delete",
+              "type": "bool",
+              "description": "Allow delete RPCs",
+              "default": false,
+              "required": false
+            },
+            {
+              "name": "client",
+              "type": "string",
+              "description": "Name of the MCP client to configure",
+              "default": "claude",
+              "required": true
+            }
+          ],
+          "commands": []
+        },
+        {
+          "name": "proxy",
+          "description": "Proxy MCP requests to a remote Redpanda Cloud MCP server.\n\nThis command connects to a specific cluster and MCP server running in that cluster,\nthen proxies MCP requests from stdio to the remote MCP server over HTTP.\n\nUse --install to configure the MCP client instead of serving stdio.",
+          "usage": "rpk cloud mcp proxy [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "client",
+              "type": "string",
+              "description": "Name of the MCP client to configure (required with --install)",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "cluster-id",
+              "type": "string",
+              "description": "Cluster ID to connect to",
+              "default": "",
+              "required": false
+            },
+            {
+              "name": "install",
+              "type": "bool",
+              "description": "Install MCP proxy configuration instead of serving stdio",
+              "default": false,
+              "required": false
+            },
+            {
+              "name": "mcp-server-id",
+              "type": "string",
+              "description": "MCP Server ID to proxy to",
+              "default": "",
+              "required": true
+            },
+            {
+              "name": "serverless-cluster-id",
+              "type": "string",
+              "description": "Serverless cluster ID to connect to",
+              "default": "",
+              "required": false
+            }
+          ],
+          "commands": []
+        },
+        {
+          "name": "stdio",
+          "description": "MCP stdio server. Can be used by MCP clients.",
+          "usage": "rpk cloud mcp stdio [flags]",
+          "aliases": [],
+          "flags": [
+            {
+              "name": "allow-delete",
+              "type": "bool",
+              "description": "Allow delete RPCs. Off by default",
+              "default": false,
+              "required": false
+            }
+          ],
+          "commands": []
+        }
+      ]
+    }
+  ]
+}

@@ -33,23 +33,24 @@ jobs:
         # rpk cloud byoc is also a managed plugin, but every byoc subcommand
         # (install, aws/azure/gcp validate, etc.) requires a valid Redpanda
         # Cloud auth token before it will even download the plugin, which
-        # isn't available here. Its subtree is restored below from a
-        # fragment extracted locally instead — see data-fragments/README.md.
+        # isn't available here. The whole rpk cloud command is restored
+        # below from a fragment extracted locally instead — see
+        # data-fragments/README.md.
         run: |
           rpk connect install
 
       - name: Regenerate data.json
         run: rpk --print-tree > public/data.json
 
-      - name: Merge in locally-extracted rpk cloud byoc fragment
+      - name: Merge in locally-extracted rpk cloud fragment
         run: |
-          if [ -f data-fragments/cloud-byoc.json ]; then
-            jq --argjson byoc "$(cat data-fragments/cloud-byoc.json)" \
-              '(.commands[] | select(.name == "cloud") | .commands) |= (map(select(.name != "byoc")) + [$byoc])' \
+          if [ -f data-fragments/cloud.json ]; then
+            jq --argjson cloud "$(cat data-fragments/cloud.json)" \
+              '.commands |= (map(select(.name != "cloud")) + [$cloud])' \
               public/data.json > public/data.json.tmp
             mv public/data.json.tmp public/data.json
           else
-            echo "no data-fragments/cloud-byoc.json found, skipping merge"
+            echo "no data-fragments/cloud.json found, skipping merge"
           fi
 
       - name: Open PR if data changed
