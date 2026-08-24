@@ -32,13 +32,17 @@ jobs:
         #
         # rpk cloud byoc is also a managed plugin, but every byoc subcommand
         # (install, aws/azure/gcp validate, etc.) requires a valid Redpanda
-        # Cloud auth token before it will even download the plugin — see
-        # README.md for the TODO on wiring up Cloud credentials for this.
+        # Cloud auth token before it will even download the plugin, which
+        # isn't available here. Its subtree is restored below from a
+        # fragment extracted locally instead — see data-fragments/README.md.
         run: |
           rpk connect install
 
       - name: Regenerate data.json
         run: rpk --print-tree > public/data.json
+
+      - name: Merge in locally-extracted fragments
+        run: node scripts/merge-fragment.mjs public/data.json data-fragments/cloud-byoc.json
 
       - name: Open PR if data changed
         uses: peter-evans/create-pull-request@v7
