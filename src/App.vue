@@ -3,7 +3,9 @@ import { computed, onMounted, ref, watch } from 'vue'
 import ForceGraph from './components/ForceGraph.vue'
 import SearchBar from './components/SearchBar.vue'
 import DetailCard from './components/DetailCard.vue'
+import FavoritesMenu from './components/FavoritesMenu.vue'
 import { buildIndex, commandPath, descendantsOf, pathTo, search, ROOT_ID, type CommandIndex } from './lib/tree'
+import { useFavorites } from './lib/favorites'
 import type { RpkCommand } from './types'
 
 const index = ref<CommandIndex | null>(null)
@@ -17,6 +19,35 @@ const searchQuery = ref('')
 // search is cleared, so exploring via search doesn't permanently rearrange
 // the graph the user had built up by hand.
 const expandedBeforeSearch = ref<Set<string> | null>(null)
+
+const { favorites, isFavorite, toggleFavorite } = useFavorites()
+
+// Favorites resolved against the loaded index, sorted alphabetically by
+// command path. Ids that no longer exist in the current data.json (e.g. a
+// removed rpk command) are hidden, not deleted, so they reappear if the
+// command comes back.
+const favoriteEntries = computed(() => {
+  if (!index.value) return []
+  return favorites.value
+    .filter((id) => index.value!.byId.has(id))
+    .map((id) => ({ id, label: commandPath(index.value!, id) }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+})
+
+// Expands the full root-to-favorite path, selects the command, and copies
+// the command string to the clipboard.
+function goToFavorite(id: string) {
+  if (!index.value?.byId.has(id)) return
+  const path = pathTo(index.value, id)
+  const next = new Set(expanded.value)
+  for (let i = 0; i < path.length - 1; i++) next.add(path[i])
+  expanded.value = next
+  selectedLeafId.value = id
+  navigator.clipboard.writeText(commandPath(index.value, id)).catch(() => {
+    // Clipboard API can be denied (permissions, insecure context). The user
+    // can still copy from the detail card.
+  })
+}
 
 onMounted(async () => {
   try {
@@ -103,6 +134,7 @@ watch(searchQuery, (query, previous) => {
     <header class="flex flex-wrap items-center gap-3 border-b border-stone-200 px-4 py-3 dark:border-stone-800">
       <h1 class="text-sm font-semibold tracking-tight">rpk command explorer</h1>
       <SearchBar v-model="searchQuery" :match-count="matchCount" />
+      <FavoritesMenu :favorites="favoriteEntries" @navigate="goToFavorite" @remove="toggleFavorite" />
       <button
         type="button"
         class="ml-auto rounded-lg border border-stone-300 px-3 py-2 text-xs font-medium text-stone-600 transition hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800"
@@ -138,8 +170,10 @@ watch(searchQuery, (query, previous) => {
         :node="selectedNode"
         :command-path="selectedCommandPath"
         :breadcrumb="breadcrumb"
+        :is-favorite="isFavorite(selectedNode.id)"
         class="absolute right-0 top-0 z-10 sm:relative"
         @close="selectedLeafId = null"
+        @toggle-favorite="toggleFavorite(selectedNode.id)"
       />
     </main>
   </div>

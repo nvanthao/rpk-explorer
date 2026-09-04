@@ -6,9 +6,10 @@ const props = defineProps<{
   node: GraphNodeData
   commandPath: string
   breadcrumb: string[]
+  isFavorite: boolean
 }>()
 
-defineEmits<{ close: [] }>()
+defineEmits<{ close: []; toggleFavorite: [] }>()
 
 const copied = ref(false)
 
@@ -40,14 +41,25 @@ function formatDefault(value: unknown): string | null {
         <p class="truncate text-xs text-stone-400">{{ breadcrumb.join(' › ') }}</p>
         <h2 class="mt-0.5 truncate text-lg font-semibold">{{ node.name }}</h2>
       </div>
-      <button
-        type="button"
-        aria-label="Close"
-        class="shrink-0 rounded-full p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-        @click="$emit('close')"
-      >
-        ✕
-      </button>
+      <div class="flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+          class="rounded-full p-1 transition hover:bg-stone-100 dark:hover:bg-stone-800"
+          :class="isFavorite ? 'text-amber-500' : 'text-stone-400 hover:text-amber-500'"
+          @click="$emit('toggleFavorite')"
+        >
+          {{ isFavorite ? '★' : '☆' }}
+        </button>
+        <button
+          type="button"
+          aria-label="Close"
+          class="rounded-full p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+          @click="$emit('close')"
+        >
+          ✕
+        </button>
+      </div>
     </div>
 
     <div class="flex flex-col gap-5 p-4">
