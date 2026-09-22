@@ -106,17 +106,23 @@ export interface SearchMatch {
 }
 
 /**
- * Finds every node whose name or description contains `query`
- * (case-insensitive), and returns each match with its full root path.
+ * Finds every node matching `query`, case-insensitively, and returns each
+ * match with its full root path.
+ *
+ * This function splits the query on whitespace. Every term must appear in
+ * the node's full command path or in its description. The haystack uses the
+ * whole path, not just the node's own name, so "config status" reaches the
+ * `rpk cluster config status` leaf. That leaf's name is only "status". Its
+ * ancestors own the other words.
  */
 export function search(index: CommandIndex, query: string): SearchMatch[] {
-  const q = query.trim().toLowerCase()
-  if (!q) return []
+  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  if (!terms.length) return []
   const matches: SearchMatch[] = []
   for (const node of index.byId.values()) {
     if (node.id === index.rootId) continue
-    const haystack = `${node.name} ${node.raw.description}`.toLowerCase()
-    if (haystack.includes(q)) {
+    const haystack = `${commandPath(index, node.id)} ${node.raw.description}`.toLowerCase()
+    if (terms.every((term) => haystack.includes(term))) {
       matches.push({ id: node.id, path: pathTo(index, node.id) })
     }
   }
