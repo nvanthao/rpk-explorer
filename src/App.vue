@@ -6,6 +6,7 @@ import DetailCard from './components/DetailCard.vue'
 import FavoritesMenu from './components/FavoritesMenu.vue'
 import { buildIndex, commandPath, descendantsOf, pathTo, search, ROOT_ID, type CommandIndex } from './lib/tree'
 import { useFavorites } from './lib/favorites'
+import { useNotes } from './lib/notes'
 import type { RpkCommand } from './types'
 
 const index = ref<CommandIndex | null>(null)
@@ -21,6 +22,7 @@ const searchQuery = ref('')
 const expandedBeforeSearch = ref<Set<string> | null>(null)
 
 const { favorites, isFavorite, toggleFavorite } = useFavorites()
+const { noteFor, setNote } = useNotes()
 
 // Favorites resolved against the loaded index, sorted alphabetically by
 // command path. Ids that no longer exist in the current data.json (e.g. a
@@ -171,9 +173,11 @@ watch(searchQuery, (query, previous) => {
         :command-path="selectedCommandPath"
         :breadcrumb="breadcrumb"
         :is-favorite="isFavorite(selectedNode.id)"
+        :note="noteFor(selectedNode.id)"
         class="absolute right-0 top-0 z-10 sm:relative"
         @close="selectedLeafId = null"
         @toggle-favorite="toggleFavorite(selectedNode.id)"
+        @update-note="(text) => setNote(selectedNode!.id, text)"
       />
     </main>
   </div>

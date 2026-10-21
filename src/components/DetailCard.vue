@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import type { GraphNodeData } from '../types'
 
 const props = defineProps<{
@@ -7,11 +7,40 @@ const props = defineProps<{
   commandPath: string
   breadcrumb: string[]
   isFavorite: boolean
+  note: string
 }>()
 
-defineEmits<{ close: []; toggleFavorite: [] }>()
+const emit = defineEmits<{ close: []; toggleFavorite: []; updateNote: [text: string] }>()
 
 const copied = ref(false)
+
+const editingNote = ref(false)
+const noteDraft = ref('')
+const noteInput = ref<HTMLTextAreaElement | null>(null)
+
+// The card stays mounted while the selection changes, so drop an unsaved
+// draft when the user picks another command.
+watch(
+  () => props.node.id,
+  () => (editingNote.value = false),
+)
+
+async function startEditNote() {
+  noteDraft.value = props.note
+  editingNote.value = true
+  await nextTick()
+  noteInput.value?.focus()
+}
+
+function saveNote() {
+  emit('updateNote', noteDraft.value)
+  editingNote.value = false
+}
+
+function deleteNote() {
+  emit('updateNote', '')
+  editingNote.value = false
+}
 
 async function copyCommand() {
   try {
@@ -80,6 +109,60 @@ function formatDefault(value: unknown): string | null {
             {{ copied ? 'Copied ✓' : 'Copy' }}
           </button>
         </div>
+      </div>
+
+      <div>
+        <div class="mb-1 flex items-center justify-between">
+          <p class="text-xs font-medium uppercase tracking-wide text-stone-400">Notes</p>
+          <button
+            v-if="!editingNote"
+            type="button"
+            class="text-xs font-medium text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-100"
+            @click="startEditNote"
+          >
+            {{ note ? 'Edit' : '+ Add note' }}
+          </button>
+        </div>
+        <template v-if="editingNote">
+          <textarea
+            ref="noteInput"
+            v-model="noteDraft"
+            rows="8"
+            placeholder="Paste sample output or write a personal note…"
+            class="block w-full resize-y rounded-md border border-stone-300 bg-white px-2.5 py-1.5 font-mono text-[13px] text-stone-800 outline-none focus:border-teal-600 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100"
+            @keydown.meta.enter.prevent="saveNote"
+            @keydown.ctrl.enter.prevent="saveNote"
+            @keydown.esc.stop="editingNote = false"
+          />
+          <div class="mt-1.5 flex items-center gap-1.5">
+            <button
+              type="button"
+              class="rounded-md bg-teal-700 px-2.5 py-1 text-xs font-medium text-white hover:bg-teal-800"
+              @click="saveNote"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              class="rounded-md border border-stone-300 px-2.5 py-1 text-xs font-medium text-stone-600 hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800"
+              @click="editingNote = false"
+            >
+              Cancel
+            </button>
+            <button
+              v-if="note"
+              type="button"
+              class="ml-auto text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400"
+              @click="deleteNote"
+            >
+              Delete
+            </button>
+          </div>
+        </template>
+        <pre
+          v-else-if="note"
+          class="max-h-80 overflow-auto whitespace-pre rounded-md bg-amber-50 px-2.5 py-1.5 font-mono text-[13px] text-stone-800 dark:bg-amber-950/40 dark:text-stone-100"
+        >{{ note }}</pre>
       </div>
 
       <div v-if="node.raw.usage">
